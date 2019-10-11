@@ -6,11 +6,11 @@ import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
-     private catsService: CatsService;
-     
-    
-      constructor(private readonly utilsHelpers: UtilsHelpers) {
-          this.catsService = new CatsService();
+      constructor(
+        private readonly utilsHelpers: UtilsHelpers,
+        private readonly catsService: CatsService
+        ) {
+          
       }
 
       @Post()
