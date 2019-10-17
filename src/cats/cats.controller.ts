@@ -12,7 +12,8 @@ import {
   UseFilters, 
   UsePipes, 
   UseGuards,
-  SetMetadata
+  SetMetadata,
+  UseInterceptors
 
 } from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
@@ -22,11 +23,17 @@ import { Cat } from './interfaces/cat.interface';
 import { ForbiddenException } from '../HttpExceptions/ForbiddenException';
 import { HttpExceptionFilter } from '../HttpExceptions/http-exception.filter';
 import { ValidationPipe } from '../common/pipes/validation.pipe';
+import { LoggingInterceptor } from '../common/interceptors/logging.interceptor';
+import { ExcludeNullInterceptor } from '../common/interceptors/excludeNull.interceptor';
+import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
 import { AuthGuard } from '../common/guards/auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 
 @Controller('cats')
+@UseInterceptors(LoggingInterceptor)
+@UseInterceptors(ExcludeNullInterceptor)
+@UseInterceptors(TransformInterceptor)
 @UseGuards(AuthGuard)
 @UseGuards(RolesGuard)
 export class CatsController {
@@ -41,7 +48,9 @@ export class CatsController {
       // @UsePipes(ValidationPipe)
       @Roles('admin')
       async create(@Body() createCatDto: CreateCatDto) {
+        console.log('creating cats');
         this.catsService.create(createCatDto);
+        return null
       }
     
       @Get()
