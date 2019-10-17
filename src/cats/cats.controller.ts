@@ -1,4 +1,20 @@
-import { Controller, Get, Post,Req, Res, HttpCode, Redirect, Query, Body, HttpException, HttpStatus, UseFilters, UsePipes } from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post,
+  Req, 
+  Res, 
+  HttpCode, 
+  Redirect, 
+  Query, Body, 
+  HttpException, 
+  HttpStatus, 
+  UseFilters, 
+  UsePipes, 
+  UseGuards,
+  SetMetadata
+
+} from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { UtilsHelpers } from '../helpers/UtilsHelpers';
@@ -6,7 +22,13 @@ import { Cat } from './interfaces/cat.interface';
 import { ForbiddenException } from '../HttpExceptions/ForbiddenException';
 import { HttpExceptionFilter } from '../HttpExceptions/http-exception.filter';
 import { ValidationPipe } from '../common/pipes/validation.pipe';
+import { AuthGuard } from '../common/guards/auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+
 @Controller('cats')
+@UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 export class CatsController {
       constructor(
         private readonly utilsHelpers: UtilsHelpers,
@@ -17,6 +39,7 @@ export class CatsController {
 
       @Post()
       // @UsePipes(ValidationPipe)
+      @Roles('admin')
       async create(@Body() createCatDto: CreateCatDto) {
         this.catsService.create(createCatDto);
       }
